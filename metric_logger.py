@@ -12,7 +12,7 @@ from IPython import display
 
 class Logger:
 
-    def __init__(self, model_name, dataset_name, ls_api_key, tensorboard=True):
+    def __init__(self, model_name, dataset_name, ls_api_key, tensorboard=False):
         self.model_name = model_name
         self.dataset_name = dataset_name
         self.data_subdir = '{}/{}'.format(model_name, dataset_name)
@@ -20,17 +20,17 @@ class Logger:
         self.ls_api_key = ls_api_key
         self.tensorboard = tensorboard
 
-        if ls_api_key:
+        if self.ls_api_key:
             losswise.set_api_key(ls_api_key)
             self.session = losswise.Session(
                 tag='egan',
                 max_iter=cfg.NUM_EPOCH,
                 track_git=False
             )
-        self.gen_graph_loss = self.session.graph('gen_loss', kind='min', display_interval=1)
-        self.dis_graph_loss = self.session.graph('dis_loss', kind='min', display_interval=1)
-        self.dis_acc_real = self.session.graph('acc_real', kind='max', display_interval=1)
-        self.dis_acc_gen = self.session.graph('acc_gen', kind='max', display_interval=1)
+            self.gen_graph_loss = self.session.graph('gen_loss', kind='min', display_interval=1)
+            self.dis_graph_loss = self.session.graph('dis_loss', kind='min', display_interval=1)
+            self.dis_acc_real = self.session.graph('acc_real', kind='max', display_interval=1)
+            self.dis_acc_gen = self.session.graph('acc_gen', kind='max', display_interval=1)
 
         if self.tensorboard:
             self.metric_logger = SummaryWriter(comment=self.comment)
