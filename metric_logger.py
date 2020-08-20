@@ -79,7 +79,7 @@ class Logger:
             images = torch.from_numpy(images)
 
         if format == 'NCHW':
-            images = images.transpose(1, 3)
+            images = images.transpose(1, 3).detach().cpu().numpy().astype(np.uint8)
 
         step = Logger._step(epoch, n_batch, num_batches)
         img_name = '{}/images{}'.format(self.comment, '')
