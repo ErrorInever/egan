@@ -63,15 +63,15 @@ class Logger:
             self.dis_graph_loss.append(step, {'train_dis_loss:': dis_loss})
             self.gen_graph_loss.append(step, {'train_gen_loss:': gen_loss})
             # D(x)
-            #self.dis_acc_real.append(step, {'train_real_acc:': dis_pred_real})
+            self.dis_acc_real.append(step, {'train_real_acc:': dis_pred_real.mean()})
             # D(G(x))
-            #self.dis_acc_gen.append(step, {'train_gen_acc:': dis_pred_gen})
+            self.dis_acc_gen.append(step, {'train_gen_acc:': dis_pred_gen.mean()})
 
         if self.tensorboard:
             self.metric_logger.add_scalar('loss/dis', dis_loss, step)
             self.metric_logger.add_scalar('loss/gen', gen_loss, step)
-            # self.metric_logger.add_scalar('acc/D(x)', dis_pred_real, step)
-            # self.metric_logger.add_scalar('acc/D(G(X))', dis_pred_gen, step)
+            self.metric_logger.add_scalar('acc/D(x)', dis_pred_real.mean(), step)
+            self.metric_logger.add_scalar('acc/D(G(X))', dis_pred_gen.mean(), step)
 
     def log_images(self, images, num_images, epoch, n_batch, num_batches, format='NCHW', normalize=True):
 
@@ -79,7 +79,7 @@ class Logger:
             images = torch.from_numpy(images)
 
         if format == 'NCHW':
-            images = images.transpose(1, 3).detach().cpu().numpy().astype(np.uint8)
+            images = images.transpose(1, 3)
 
         step = Logger._step(epoch, n_batch, num_batches)
         img_name = '{}/images{}'.format(self.comment, '')
@@ -136,9 +136,9 @@ class Logger:
     @staticmethod
     def display_status(epoch, num_epochs, n_batch, num_batches, dis_loss, gen_loss, dis_pred_real, gen_pred_real):
         if isinstance(dis_loss, torch.autograd.Variable):
-            dis_loss = dis_loss.data().cpu().numpy()
+            dis_loss = dis_loss.cpu().numpy()
         if isinstance(gen_loss, torch.autograd.Variable):
-            gen_loss = gen_loss.data().cpu().numpy()
+            gen_loss = gen_loss.cpu().numpy()
         if isinstance(dis_pred_real, torch.autograd.Variable):
             dis_pred_real = dis_pred_real.data().cpu().numpy()
         if isinstance(gen_pred_real, torch.autograd.Variable):
