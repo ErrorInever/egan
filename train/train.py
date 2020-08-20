@@ -27,7 +27,7 @@ def train_discriminator(discriminator, d_optimizer, criterion, device, real_data
     # 1. train on real data
     prediction_real = discriminator(real_data)
     loss_real = criterion(prediction_real, ones_labels)
-    loss_real.backward()
+    loss_real.backward(retain_graph=True)
 
     # 2. train on fake data
     prediction_gen = discriminator(gen_data)
@@ -64,7 +64,7 @@ def train_one_epoch(generator, discriminator, dataloader, d_optimizer, g_optimiz
         logger.log(dis_loss, gen_loss, prediction_real, prediction_gen, epoch, n_batch, len(dataloader))
 
         if n_batch % freq == 0:
-            static_pz = generator(static_z_vector)
+            static_pz = generator(static_z_vector.to(device))
             static_images = vectors_to_images(static_pz)
             logger.log_images(static_images, num_samples, epoch, n_batch, len(dataloader))
             logger.display_status(epoch, cfg.NUM_EPOCH, n_batch, len(dataloader),

@@ -63,15 +63,15 @@ class Logger:
             self.dis_graph_loss.append(step, {'train_dis_loss:': dis_loss})
             self.gen_graph_loss.append(step, {'train_gen_loss:': gen_loss})
             # D(x)
-            self.dis_acc_real.append(step, {'train_real_acc:': dis_pred_real})
+            #self.dis_acc_real.append(step, {'train_real_acc:': dis_pred_real})
             # D(G(x))
-            self.dis_acc_gen.append(step, {'train_gen_acc:': dis_pred_gen})
+            #self.dis_acc_gen.append(step, {'train_gen_acc:': dis_pred_gen})
 
         if self.tensorboard:
             self.metric_logger.add_scalar('loss/dis', dis_loss, step)
             self.metric_logger.add_scalar('loss/gen', gen_loss, step)
-            self.metric_logger.add_scalar('acc/D(x)', dis_pred_real, step)
-            self.metric_logger.add_scalar('acc/D(G(X))', dis_pred_gen, step)
+            # self.metric_logger.add_scalar('acc/D(x)', dis_pred_real, step)
+            # self.metric_logger.add_scalar('acc/D(G(X))', dis_pred_gen, step)
 
     def log_images(self, images, num_images, epoch, n_batch, num_batches, format='NCHW', normalize=True):
 
