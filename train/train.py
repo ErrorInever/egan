@@ -40,19 +40,21 @@ def train_discriminator(discriminator, d_optimizer, criterion, real_data, gen_da
 
 
 def train_one_epoch(generator, discriminator, dataloader, d_optimizer, g_optimizer,
-                    criterion, epoch, logger, static_z_vector, num_samples, freq=100):
+                    criterion, epoch, device, logger, static_z_vector, num_samples, freq=100):
     for n_batch, (real_batch, _) in enumerate(dataloader):
         m = real_batch.size(0)
 
+        real_batch = real_batch.to(device)
+
         # 1. train discriminator
-        z_vector = latent_space(m)
+        z_vector = latent_space(m).to(device)
         pz_distribution = generator(z_vector).detach()
         px_distribution = images_to_vectors(real_batch)
         dis_loss, prediction_real, prediction_gen = train_discriminator(
             discriminator, d_optimizer, criterion, real_data=px_distribution, gen_data=pz_distribution)
 
         # 2. train generator
-        z_vector = latent_space(m)
+        z_vector = latent_space(m).to(device)
         pz_distribution = generator(z_vector)
         gen_loss = train_generator(discriminator, g_optimizer, criterion, gen_data=pz_distribution)
 

@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+import matplotlib.pyplot as plt
 
 
 def activation_func(activation, inplace=False):
@@ -46,3 +47,19 @@ def zeros_target(size):
     """
     data = torch.zeros(size, 1)
     return data
+
+
+def show_batch(batch, max_rows=4, max_cols=5):
+    images = batch[0]
+
+    fig, axes = plt.subplots(nrows=max_rows, ncols=max_cols, figsize=(6, 6))
+    for idx, image in enumerate(images):
+        row = idx // max_cols
+        col = idx % max_cols
+        axes[row, col].axis("off")
+        axes[row, col].imshow(image.squeeze(0).cpu(), cmap="gray")
+    plt.subplots_adjust(wspace=.05, hspace=.05)
+    fig.tight_layout()
+    plt.show()
+
+

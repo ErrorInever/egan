@@ -1,5 +1,7 @@
 import argparse
 import torch
+import time
+from datetime import datetime
 from torch.utils.data.dataloader import DataLoader
 from config.conf import cfg
 from data import get_emnist_dataset
@@ -25,8 +27,13 @@ if __name__ == "__main__":
     dataset = get_emnist_dataset()
     dataloader = DataLoader(dataset, batch_size=cfg.BATCH_SIZE, shuffle=True, num_workers=cfg.BATCH_SIZE)
 
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    print('Running with device {}'.format(device))
+
     generator = Generator()
+    generator.to(device)
     discriminator = Discriminator()
+    discriminator.to(device)
 
     g_optimizer = torch.optim.Adam(generator.parameters(), lr=cfg.LEARNING_RATE)
     d_optimizer = torch.optim.Adam(discriminator.parameters(), lr=cfg.LEARNING_RATE)
@@ -37,8 +44,13 @@ if __name__ == "__main__":
 
     num_samples = 16
     static_z = latent_space(num_samples)
+
+    start_time = time.time()
     for epoch in range(cfg.NUM_EPOCH):
-        train_one_epoch(generator, discriminator, dataloader, d_optimizer, g_optimizer, criterion, epoch, logger,
-                        static_z, num_samples, freq=100)
+        train_one_epoch(generator, discriminator, dataloader, d_optimizer, g_optimizer, criterion, epoch, device,
+                        logger, static_z, num_samples, freq=100)
         if args.save_models:
             logger.save_models(generator, discriminator, epoch)
+
+    total_time = time.time() - start_time
+    print('Training time {}'.format(total_time))
