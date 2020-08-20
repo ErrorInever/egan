@@ -64,8 +64,5 @@ def train_one_epoch(generator, discriminator, dataloader, d_optimizer, g_optimiz
         logger.log(dis_loss, gen_loss, prediction_real, prediction_gen, epoch, n_batch, len(dataloader))
 
         if n_batch % freq == 0:
-            static_pz = generator(static_z_vector.to(device))
-            static_images = vectors_to_images(static_pz)
-            logger.log_images(static_images, num_samples, epoch, n_batch, len(dataloader))
             logger.display_status(epoch, cfg.NUM_EPOCH, n_batch, len(dataloader),
                                   dis_loss, gen_loss, prediction_real, prediction_gen)
