@@ -4,31 +4,34 @@ from utils import latent_space, images_to_vectors, ones_target, zeros_target, ve
 from config.conf import cfg
 
 
-def train_generator(discriminator, g_optimizer, criterion, gen_data):
+def train_generator(discriminator, g_optimizer, criterion, device, gen_data):
     m = gen_data.size(0)
+    ones_labels = ones_target(m).to(device)
 
     g_optimizer.zero_grad()
 
     prediction = discriminator(gen_data)
-    loss = criterion(prediction, ones_target(m))
+    loss = criterion(prediction, ones_labels)
     loss.backward()
     g_optimizer.step()
     return loss
 
 
-def train_discriminator(discriminator, d_optimizer, criterion, real_data, gen_data):
+def train_discriminator(discriminator, d_optimizer, criterion, device, real_data, gen_data):
     m = real_data.size(0)
+    ones_labels = ones_target(m).to(device)
+    zeros_labels = zeros_target(m).to(device)
 
     d_optimizer.zero_grad()
 
     # 1. train on real data
     prediction_real = discriminator(real_data)
-    loss_real = criterion(prediction_real, ones_target(m))
+    loss_real = criterion(prediction_real, ones_labels)
     loss_real.backward()
 
     # 2. train on fake data
     prediction_gen = discriminator(gen_data)
-    loss_gen = criterion(prediction_gen, zeros_target(m))
+    loss_gen = criterion(prediction_gen, zeros_labels)
     loss_real.backward()
 
     # update weights
@@ -51,12 +54,12 @@ def train_one_epoch(generator, discriminator, dataloader, d_optimizer, g_optimiz
         pz_distribution = generator(z_vector).detach()
         px_distribution = images_to_vectors(real_batch)
         dis_loss, prediction_real, prediction_gen = train_discriminator(
-            discriminator, d_optimizer, criterion, real_data=px_distribution, gen_data=pz_distribution)
+            discriminator, d_optimizer, criterion, device, real_data=px_distribution, gen_data=pz_distribution)
 
         # 2. train generator
         z_vector = latent_space(m).to(device)
         pz_distribution = generator(z_vector)
-        gen_loss = train_generator(discriminator, g_optimizer, criterion, gen_data=pz_distribution)
+        gen_loss = train_generator(discriminator, g_optimizer, criterion, device, gen_data=pz_distribution)
 
         logger.log(dis_loss, gen_loss, prediction_real, prediction_gen, epoch, n_batch, len(dataloader))
 
