@@ -13,6 +13,12 @@ from IPython import display
 class Logger:
 
     def __init__(self, model_name, dataset_name, ls_api_key, tensorboard=False):
+        """
+        :param model_name: ``str``, model name
+        :param dataset_name: ``str``, dataset name
+        :param ls_api_key:  ``str``, losswise API key
+        :param tensorboard: if True - save tensorboard metrics
+        """
         self.model_name = model_name
         self.dataset_name = dataset_name
         self.data_subdir = '{}/{}'.format(model_name, dataset_name)
@@ -36,6 +42,16 @@ class Logger:
             self.metric_logger = SummaryWriter(comment=self.comment)
 
     def log(self, dis_loss, gen_loss, dis_pred_real, dis_pred_gen, epoch, n_batch, num_batches):
+        """
+        Logging training values
+        :param dis_loss: discriminator loss
+        :param gen_loss: generator loss
+        :param dis_pred_real: accuracy predict real image
+        :param dis_pred_gen: accuracy predict generated image
+        :param epoch: current epoch
+        :param n_batch: current batch
+        :param num_batches: count batches
+        """
         if isinstance(dis_loss, torch.autograd.Variable):
             dis_loss.data.cpu().numpy()
         if isinstance(gen_loss, torch.autograd.Variable):
