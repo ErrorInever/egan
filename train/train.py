@@ -40,7 +40,7 @@ def train_discriminator(discriminator, d_optimizer, criterion, real_data, gen_da
 
 
 def train_one_epoch(generator, discriminator, dataloader, d_optimizer, g_optimizer,
-                    criterion, epoch, logger, static_z_vector, freq=100):
+                    criterion, epoch, logger, static_z_vector, num_samples, freq=100):
     for n_batch, (real_batch, _) in enumerate(dataloader):
         m = real_batch.size(0)
 
@@ -61,6 +61,6 @@ def train_one_epoch(generator, discriminator, dataloader, d_optimizer, g_optimiz
         if n_batch % freq == 0:
             static_pz = generator(static_z_vector)
             static_images = vectors_to_images(static_pz)
-            logger.log_images(static_images, 16, epoch, n_batch, len(dataloader))
+            logger.log_images(static_images, num_samples, epoch, n_batch, len(dataloader))
             logger.display_status(epoch, cfg.NUM_EPOCH, n_batch, len(dataloader),
                                   dis_loss, gen_loss, prediction_real, prediction_gen)
