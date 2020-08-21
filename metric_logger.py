@@ -33,10 +33,8 @@ class Logger:
                 max_iter=cfg.NUM_EPOCH,
                 track_git=False
             )
-            self.gen_graph_loss = self.session.graph('gen_loss', kind='min', display_interval=1)
-            self.dis_graph_loss = self.session.graph('dis_loss', kind='min', display_interval=1)
-            self.dis_acc_real = self.session.graph('acc_real', kind='max', display_interval=1)
-            self.dis_acc_gen = self.session.graph('acc_gen', kind='max', display_interval=1)
+            self.graph_loss = self.session.graph('loss', kind='min')
+            self.graph_acc = self.session.graph('accuracy', kind='max')
 
         if self.tensorboard:
             self.metric_logger = SummaryWriter(comment=self.comment)
@@ -60,12 +58,8 @@ class Logger:
         step = Logger._step(epoch, n_batch, num_batches)
 
         if self.ls_api_key:
-            self.dis_graph_loss.append(step, {'train_dis_loss:': dis_loss})
-            self.gen_graph_loss.append(step, {'train_gen_loss:': gen_loss})
-            # D(x)
-            self.dis_acc_real.append(step, {'train_real_acc:': dis_pred_real.mean()})
-            # D(G(x))
-            self.dis_acc_gen.append(step, {'train_gen_acc:': dis_pred_gen.mean()})
+            self.graph_loss.append(step, {'Discriminator': dis_loss, 'Generator': gen_loss})
+            self.graph_acc.append(step, {'D(x)': dis_pred_real.mean(), 'D(G(z))': dis_pred_gen.mean()})
 
         if self.tensorboard:
             self.metric_logger.add_scalar('loss/dis', dis_loss, step)
