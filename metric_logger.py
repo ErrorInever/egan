@@ -88,7 +88,7 @@ class Logger:
         out_dir = './data/images/{}'.format(self.data_subdir)
         Logger._make_dir(out_dir)
 
-        fig = plt.figure(figsize)
+        fig = plt.figure(figsize=figsize)
         plt.imshow(np.moveaxis(horizontal_grid.numpy(), 0, -1))
         plt.axis('off')
         if plot_horizontal:
