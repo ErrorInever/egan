@@ -2,8 +2,12 @@ import losswise
 import torch
 import os
 import errno
+import numpy as np
+import torchvision
 from tensorboardX import SummaryWriter
 from config.conf import cfg
+from matplotlib import pyplot as plt
+from IPython import display
 
 
 class Logger:
@@ -68,6 +72,41 @@ class Logger:
             self.metric_logger.add_scalar('loss/gen', gen_loss, step)
             self.metric_logger.add_scalar('acc/D(x)', dis_pred_real.mean(), step)
             self.metric_logger.add_scalar('acc/D(G(X))', dis_pred_gen.mean(), step)
+
+    def log_images(self, images, num_images, epoch, n_batch, num_batches, normalize=True):
+        horizontal_grid = torchvision.utils.make_grid(images, normalize=normalize, scale_each=True)
+        nrows = int(np.sqrt(num_images))
+        grid = torchvision.utils.make_grid(images, nrow=nrows, normalize=normalize, scale_each=True)
+
+        step = Logger._step(epoch, n_batch, num_batches)
+        img_name = '{}/images{}'.format(self.comment, '')
+
+        self.metric_logger.add_image(img_name, horizontal_grid, step)
+        self.save_torch_images(horizontal_grid, grid, epoch, n_batch)
+
+    def save_torch_images(self, horizontal_grid, grid, epoch, n_batch, plot_horizontal=True, figsize=(16, 16)):
+        out_dir = './data/images/{}'.format(self.data_subdir)
+        Logger._make_dir(out_dir)
+
+        fig = plt.figure(figsize)
+        plt.imshow(np.moveaxis(horizontal_grid.numpy(), 0, -1))
+        plt.axis('off')
+        if plot_horizontal:
+            display.display(plt.gcf())
+        self._save_images(fig, epoch, n_batch, 'hor')
+        plt.close()
+
+        fig = plt.figure()
+        plt.imshow(np.moveaxis(grid.numpy(), 0, -1))
+        plt.axis('off')
+        self._save_images(fig, epoch, n_batch)
+        plt.close()
+
+    def _save_images(self, fig, epoch, n_batch, comment=''):
+        out_dir = './data/images/{}'.format(self.data_subdir)
+        Logger._make_dir(out_dir)
+        fig.savefig('{}/{}_epoch_{}_batch_{}.png'.format(out_dir,
+                                                         comment, epoch, n_batch))
 
     def save_models(self, generator, discriminator, epoch):
         out_dir = './data/models/{}'.format(self.data_subdir)
