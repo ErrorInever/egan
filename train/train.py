@@ -25,12 +25,12 @@ def train_discriminator(discriminator, d_optimizer, criterion, device, real_data
     # 1. train on real data
     prediction_real = discriminator(real_data)
     loss_real = criterion(prediction_real, ones_labels)
-    loss_real.backward(retain_graph=True)
+    loss_real.backward()
 
     # 2. train on fake data
     prediction_gen = discriminator(gen_data)
     loss_gen = criterion(prediction_gen, zeros_labels)
-    loss_real.backward()
+    loss_gen.backward()
 
     # update weights
     d_optimizer.step()
