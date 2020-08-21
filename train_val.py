@@ -49,8 +49,8 @@ if __name__ == "__main__":
     for epoch in range(cfg.NUM_EPOCH):
         train_one_epoch(generator, discriminator, dataloader, d_optimizer, g_optimizer, criterion, epoch, device,
                         logger, static_z, num_samples, freq=100)
-        if args.save_models:
-            logger.save_models(generator, discriminator, epoch)
+    if args.save_models:
+        logger.save_models(generator, discriminator, epoch)
 
     total_time = time.time() - start_time
     print('Training time {}'.format(total_time))
