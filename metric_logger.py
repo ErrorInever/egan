@@ -89,7 +89,7 @@ class Logger:
         Logger._make_dir(out_dir)
 
         fig = plt.figure(figsize=figsize)
-        plt.imshow(np.moveaxis(horizontal_grid.numpy(), 0, -1))
+        plt.imshow(np.moveaxis(horizontal_grid.detach().cpu().numpy(), 0, -1))
         plt.axis('off')
         if plot_horizontal:
             display.display(plt.gcf())
@@ -97,7 +97,7 @@ class Logger:
         plt.close()
 
         fig = plt.figure()
-        plt.imshow(np.moveaxis(grid.numpy(), 0, -1))
+        plt.imshow(np.moveaxis(grid.detach().cpu().numpy(), 0, -1))
         plt.axis('off')
         self._save_images(fig, epoch, n_batch)
         plt.close()
@@ -122,14 +122,15 @@ class Logger:
 
     @staticmethod
     def display_status(epoch, num_epochs, n_batch, num_batches, dis_loss, gen_loss, dis_pred_real, gen_pred_real):
+
         if isinstance(dis_loss, torch.autograd.Variable):
-            dis_loss = dis_loss.cpu().numpy()
+            dis_loss = dis_loss.item()
         if isinstance(gen_loss, torch.autograd.Variable):
-            gen_loss = gen_loss.cpu().numpy()
+            gen_loss = gen_loss.item()
         if isinstance(dis_pred_real, torch.autograd.Variable):
-            dis_pred_real = dis_pred_real.data().cpu().numpy()
+            dis_pred_real = dis_pred_real.float().mean().item()
         if isinstance(gen_pred_real, torch.autograd.Variable):
-            gen_pred_real = gen_pred_real.data().cpu().numpy()
+            gen_pred_real = gen_pred_real.float().mean().item()
 
         print('Epoch: [{}/{}], Batch Num: [{}/{}]'.format(
             epoch, num_epochs, n_batch, num_batches)
