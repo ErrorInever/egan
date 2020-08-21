@@ -1,5 +1,3 @@
-import torch
-from metric_logger import Logger
 from utils import latent_space, images_to_vectors, ones_target, zeros_target, vectors_to_images
 from config.conf import cfg
 
@@ -64,5 +62,10 @@ def train_one_epoch(generator, discriminator, dataloader, d_optimizer, g_optimiz
         logger.log(dis_loss, gen_loss, prediction_real, prediction_gen, epoch, n_batch, len(dataloader))
 
         if n_batch % freq == 0:
+            static_z_vector = static_z_vector.to(device)
+            pz_distribution = generator(static_z_vector)
+            test_images = vectors_to_images(pz_distribution)
+            test_images = test_images.data
+            logger.log_images(test_images, num_samples, epoch, n_batch, len(dataloader))
             logger.display_status(epoch, cfg.NUM_EPOCH, n_batch, len(dataloader),
                                   dis_loss, gen_loss, prediction_real, prediction_gen)
