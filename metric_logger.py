@@ -136,7 +136,7 @@ class Logger:
             epoch, num_epochs, n_batch, num_batches)
         )
         print('Discriminator Loss: {:.4f}, Generator Loss: {:.4f}'.format(dis_loss, gen_loss))
-        print('D(x): {:.4f}, D(G(z)): {:.4f}'.format(dis_pred_real.mean(), gen_pred_real.mean()))
+        print('D(x): {:.4f}, D(G(z)): {:.4f}'.format(dis_pred_real, gen_pred_real))
 
     @staticmethod
     def _step(epoch, n_batch, num_batches):
