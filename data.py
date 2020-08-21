@@ -9,4 +9,4 @@ def get_emnist_dataset():
         transforms.Normalize((.5,), (.5,))
     ])
     out_dir = './dataset'
-    return datasets.EMNIST(root=out_dir, split='bymerge', train=True, transform=compose, download=True)
+    return datasets.EMNIST(root=out_dir, split='letters', train=True, transform=compose, download=True)
